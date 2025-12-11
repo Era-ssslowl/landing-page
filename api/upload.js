@@ -1,49 +1,24 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { put } from "@vercel/blob";
 
 export const config = {
-  api: {
-    bodyParser: false, // receive raw file stream
-  },
+  runtime: "edge", // Blob requires Edge Runtime
 };
 
-const s3 = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-  }
-});
-
-export default async function handler(req, res) {
+export default async function handler(req) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return new Response("Method not allowed", { status: 405 });
   }
 
-  try {
-    const chunks = [];
-    for await (const chunk of req) {
-      chunks.push(chunk);
-    }
-    const buffer = Buffer.concat(chunks);
+  const { filename, contentType } = await req.json();
 
-    const fileKey = `uploads/${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2)}`;
+  // Generate a direct upload URL
+  const { url, uploadUrl } = await put(filename, "", {
+    access: "public",
+    contentType,
+    multipart: true,
+  });
 
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: process.env.AWS_BUCKET,
-        Key: fileKey,
-        Body: buffer,
-      })
-    );
-
-    res.status(200).json({
-      success: true,
-      fileKey,
-    });
-  } catch (error) {
-    console.error("upload error:", error);
-    res.status(500).json({ error: "Upload failed" });
-  }
+  return new Response(JSON.stringify({ url, uploadUrl }), {
+    headers: { "Content-Type": "application/json" },
+  });
 }

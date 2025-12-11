@@ -1,61 +1,66 @@
 import { useState } from "react";
 
 export default function FileUploader() {
-  const [file, setFile] = useState(null);
   const [status, setStatus] = useState("");
+  const [uploadedUrl, setUploadedUrl] = useState("");
 
-  function handleChange(e) {
-    setFile(e.target.files[0]);
-  }
+  async function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  async function handleUpload() {
-    if (!file) {
-      setStatus("Please choose a file first.");
-      return;
-    }
+    setStatus("Requesting upload URL...");
 
-    setStatus("Uploading...");
+    // 1. Ask API for upload URL
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type,
+      }),
+    });
 
-    try {
-      const result = await fetch("/api/upload", {
-        method: "POST",
-        body: file, // raw data stream
-      });
+    const { url, uploadUrl } = await res.json();
 
-      const json = await result.json();
+    setStatus("Uploading to Vercel Blob...");
 
-      if (json.success) {
-        setStatus("Uploaded successfully!");
-      } else {
-        setStatus("Upload failed.");
-      }
-    } catch (err) {
-      console.error(err);
-      setStatus("Error uploading file.");
-    }
+    // 2. Upload directly to Vercel Blob
+    await fetch(uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    setStatus("Upload complete!");
+    setUploadedUrl(url);
   }
 
   return (
-    <div className="border border-gray-300 rounded-lg p-6 bg-white shadow-sm">
-      <h2 className="text-xl font-semibold mb-3 text-center">Upload a File</h2>
+    <div className="mt-12 w-full max-w-lg mx-auto border border-gray-300 rounded-lg p-6 bg-white shadow-sm">
+      <h2 className="text-2xl font-semibold mb-4 text-center">Upload a File</h2>
 
       <input
         type="file"
-        onChange={handleChange}
-        className="mb-4 block w-full text-sm file:mr-4 file:py-2 file:px-4 
-                  file:rounded-md file:border-0 file:bg-black file:text-white 
-                  file:hover:bg-gray-800 file:cursor-pointer"
+        onChange={handleFileChange}
+        className="block w-full text-sm mb-4 file:mr-4 file:py-2 file:px-4 
+                   file:rounded-md file:border-0 file:bg-black file:text-white 
+                   file:cursor-pointer file:hover:bg-gray-800"
       />
 
-      <button
-        onClick={handleUpload}
-        className="w-full py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
-      >
-        Upload
-      </button>
+      <p className="text-gray-600 text-sm text-center">{status}</p>
 
-      {status && (
-        <p className="mt-3 text-center text-gray-600 text-sm">{status}</p>
+      {uploadedUrl && (
+        <div className="mt-4 text-center">
+          <p className="text-gray-800 font-medium">Uploaded File URL:</p>
+          <a
+            href={uploadedUrl}
+            target="_blank"
+            className="text-blue-600 underline break-all"
+          >
+            {uploadedUrl}
+          </a>
+        </div>
       )}
     </div>
   );

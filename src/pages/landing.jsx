@@ -5,9 +5,7 @@ export default function Landing() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <header className="w-full py-6 px-8 flex justify-between items-center">
-        <div className="text-2xl font-bold text-gray-800">
-          Yerasyl.dev
-        </div>
+        <div className="text-2xl font-bold text-gray-800">Yerasyl.dev</div>
         <button className="px-4 py-2 rounded-md bg-black text-white hover:bg-gray-800 transition">
           Contact Me
         </button>
@@ -21,12 +19,12 @@ export default function Landing() {
           </h1>
 
           <p className="text-lg text-gray-600 leading-relaxed mb-8">
-            I am a software developer skilled in React, Android (Kotlin), Go, 
-            backend architecture, and machine learning. I enjoy building clean, 
+            I am a software developer skilled in React, Android (Kotlin), Go,
+            backend architecture, and machine learning. I enjoy building clean,
             scalable systems and intuitive UI experiences.
           </p>
 
-          <div className="flex justify-center gap-4 mb-14">
+          <div className="flex justify-center gap-4">
             <a
               href="#projects"
               className="px-6 py-3 rounded-md bg-black text-white font-medium hover:bg-gray-800 transition"
@@ -44,9 +42,7 @@ export default function Landing() {
         </div>
 
         {/* Upload Section */}
-        <section className="mt-6 w-full max-w-lg">
-          <FileUploader />
-        </section>
+        <FileUploader />
       </main>
 
       {/* Footer */}
