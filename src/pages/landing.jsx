@@ -1,3 +1,5 @@
+import FileUploader from "../components/FileUploader";
+
 export default function Landing() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -11,8 +13,8 @@ export default function Landing() {
         </button>
       </header>
 
-      {/* Hero Section */}
-      <main className="flex flex-1 items-center justify-center px-4">
+      {/* Hero */}
+      <main className="flex flex-col flex-1 items-center justify-center px-4">
         <div className="max-w-3xl text-center">
           <h1 className="text-5xl font-extrabold text-gray-900 mb-6">
             Hello, I am Yerasyl
@@ -24,7 +26,7 @@ export default function Landing() {
             scalable systems and intuitive UI experiences.
           </p>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-4 mb-14">
             <a
               href="#projects"
               className="px-6 py-3 rounded-md bg-black text-white font-medium hover:bg-gray-800 transition"
@@ -40,6 +42,11 @@ export default function Landing() {
             </a>
           </div>
         </div>
+
+        {/* Upload Section */}
+        <section className="mt-6 w-full max-w-lg">
+          <FileUploader />
+        </section>
       </main>
 
       {/* Footer */}
