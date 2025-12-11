@@ -1,7 +1,7 @@
 import { put } from "@vercel/blob";
 
 export const config = {
-  runtime: "nodejs18.x", // Blob requires Edge Runtime
+  runtime: "nodejs", // Blob requires Edge Runtime
 };
 
 export default async function handler(req) {
